@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Popis pitanja - {{ quiz_name }}</title>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+</head>
+<body class="bg-light">
+
+{% include 'navbar.html' %}
+
+<div class="container mt-5">
+    <h4 class="text-center">{{ quiz_name }}</h4>
+
+    <!-- Dodaj pitanje -->
+    <a href="{{ url_for('admin.add_question', quiz_id=quiz_id) }}" class="btn btn-primary mb-3">Dodaj pitanje</a>
+
+    <!-- Prikaz pitanja s gumbima za izmjenu i brisanje -->
+    <table class="table" id="questionsTable">
+        <tbody>
+        {% for question in questions %}
+            <tr>
+                <td>{{ question.question_text }}</td>
+                <td>
+                    <a href="{{ url_for('admin.edit_question', quiz_id=quiz_id, question_id=question.id) }}" class="btn btn-warning btn-sm">Izmijeni</a>
+                </td>
+                <td>
+                    <a href="{{ url_for('admin.delete_question', quiz_id=quiz_id, question_id=question.id) }}" class="btn btn-danger btn-sm">Izbriši</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include 'footer.html' %}
+
+<!-- Inicijalizacija datatablice, hrvatski jezik -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#questionsTable').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Croatian.json"
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

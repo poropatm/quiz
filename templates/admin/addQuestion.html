@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dodavanje pitanja</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-quiz.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"  />
+
+</head>
+<body class="bg-light">
+
+{% include 'navbar.html' %}
+
+<div class="container mt-5">
+    <h4>Dodavanje pitanja</h4>
+    <form method="POST" action="{{ url_for('admin.add_question', quiz_id=quiz_id) }}">
+        {{ form.csrf_token }}
+        <div class="form-group">
+            <label for="question_text" class="font-weight-bold">Pitanje:</label>
+            <input type="text" class="form-control" id="question_text" name="question_text" required>
+        </div>
+        <fieldset class="form-group">
+            <legend>Odgovori</legend>
+            <div class="form-group">
+                <label for="option_a" class="font-weight-bold">A:</label>
+                <input type="text" class="form-control" id="option_a" name="option_a" required>
+            </div>
+            <div class="form-group">
+                <label for="option_b" class="font-weight-bold">B:</label>
+                <input type="text" class="form-control" id="option_b" name="option_b" required>
+            </div>
+            <div class="form-group">
+                <label for="option_c" class="font-weight-bold">C:</label>
+                <input type="text" class="form-control" id="option_c" name="option_c" required>
+            </div>
+            <div class="form-group">
+                <label for="option_d" class="font-weight-bold">D:</label>
+                <input type="text" class="form-control" id="option_d" name="option_d" required>
+            </div>
+        </fieldset>
+        <div class="form-group">
+            <label for="correct_option" class="font-weight-bold">Točan odgovor:</label>
+            <select class="form-control" id="correct_option" name="correct_option" required>
+                <option value="option_a">A</option>
+                <option value="option_b">B</option>
+                <option value="option_c">C</option>
+                <option value="option_d">D</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Spremi</button>
+    </form>
+    <a href="{{ url_for('admin.list_questions', quiz_id=quiz_id) }}" class="btn btn-secondary mt-3">Povratak na popis pitanja</a>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

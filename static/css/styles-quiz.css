@@ -1,0 +1,120 @@
+/*
+
+.answer-button {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.answer-button:hover {
+    background-color: #2980b9;
+}
+*/
+
+body {
+    background-color: #f8f9fa;
+}
+
+.question-container {
+    display: none;
+    position: relative;
+
+}
+
+.quiz-card {
+    margin-top: 20px;
+    background-color: #ffffff;
+    border: 2px solid #dc3545;
+    border-radius: 10px;
+}
+
+.quiz-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.card-body {
+    text-align: center;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #dc3545;
+    margin-bottom: 20px;
+}
+
+.list-group {
+    text-align: center;
+}
+
+.answer-button {
+    display: block;
+    width: 70%;
+    margin: 0 auto 10px auto;
+    background-color: #dc3545;
+    color: #ffffff;
+    border: 1px solid #dc3545;
+    font-size: 1.2rem;
+}
+
+.answer-button:hover {
+    background-color: #c82333;
+    color: #ffffff;
+    border: 1px solid #c82333;
+}
+
+.mt-3 {
+    margin-top: 20px;
+}
+
+.btn-primary {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-primary:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+}
+
+.card-title {
+    display: block; /* Set it as a block element */
+    width: 70%; /* Adjust the width as needed */
+    margin: 0 auto 20px auto; /* Center and add margin */
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #dc3545;
+}
+
+#startQuizBtn {
+    width: 150px; /* Adjust the width as needed */
+    height: 150px; /* Adjust the height as needed */
+    border-radius: 50%;
+    font-size: 1.5rem; /* Adjust the font size as needed */
+}
+
+#timerDisplay {
+    font-size: 2em;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    margin-top: 20px;
+    transition: color 0.5s ease; /* Add transition for color property */
+}
+
+#backBtn, #welcomeBtn {
+    position: fixed;
+    bottom: 100px; /* Adjust the distance from the bottom */
+    left: calc(100% - 200px); /* Place it 50 pixels from the right end */
+    z-index: 1000; /* Adjust the z-index to ensure it appears above other elements */
+}
+

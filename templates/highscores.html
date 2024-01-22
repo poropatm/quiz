@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rang lista</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-quiz.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"  />
+
+</head>
+<body>
+{% include 'navbar.html' %}
+
+<div class="container mt-4">
+    <h1 class="quiz-title">Rang lista</h1>
+
+    <!-- Tablica za prikaz rang liste -->
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">Mjesto</th>
+            <th scope="col">Rezultat</th>
+            <th scope="col">Vatrogasac</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for high_score in high_scores %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ high_score.max_score }}</td>
+                <td>{{ high_score.username }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+<div class="float-right col-11" id="backBtn">
+    <a href="{{ url_for('views.quiz', quiz_id=quiz_id) }}" class="btn btn-dark">Vrati se na kviz</a>
+</div>
+
+{% include 'footer.html' %}
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

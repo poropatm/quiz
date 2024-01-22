@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ quiz_name }}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-quiz.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"  />
+
+    <style>
+        .question-container, #timerDisplay {
+            display: none;
+        }
+
+        #backBtn {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+{% include 'navbar.html' %}
+
+<div class="container mt-5 col-11">
+    <h1 class="quiz-title text-dark">{{ quiz_name }}</h1>
+
+    {% if score is none %}
+
+        <div class="mt-5 text-center">
+            <div>
+                <button class="btn btn-primary btn-lg" id="startQuizBtn">START</button>
+            </div>
+            <div class="mt-3">
+                <button class="btn btn-warning btn-lg" id="startPracticeBtn">Želim vježbati</button>
+            </div>
+
+            <div class="mt-5">
+                <a id="highscoresBtn" href="{{ url_for('views.highscores', quiz_id=quiz_id) }}" class="btn btn-success mt-3">Rang lista</a>
+            </div>
+        </div>
+        <div class="col">
+            <!-- Prikaz timera -->
+            <div id="timerDisplay" class="mt-2 text-right"></div>
+        </div>
+
+        <form method="POST" action="{{ url_for('views.quiz', quiz_id=quiz_id) }}" id="quizForm">
+
+            {% for question in questions %}
+
+                <div class="question-container" id="question{{ question.id }}">
+
+                    <div class="card quiz-card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ question.question_text }}</h5>
+
+                            {% if question.image %}
+                                <!-- Prikaz slike ako postoji -->
+                                <img src="{{ url_for('static', filename=question.image.file_path) }}" alt="Question Image" style="height: 100px; margin: 10px 0 20px 0;">
+                            {% endif %}
+
+                            <div class="list-group">
+                                {% for answer in question.answers %}
+                                    <button class="list-group-item list-group-item-action answer-button" type="button" data-answer="{{ answer.option_text }}">
+                                        {{ answer.option_text }}
+                                    </button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <input type="hidden" name="userAnswers" id="userAnswers" value="">
+        </form>
+    {% endif %}
+
+    <!-- Prikaz rezultata ako postoji-->
+    {% if score is not none %}
+        <div class="mt-3 text-center">
+            <h3 style="color: #dc3545;">Your Score: {{ score }}/{{ total }}</h3>
+            <!-- Gumb za prikaz rang liste -->
+            <a href="{{ url_for('views.highscores', quiz_id=quiz_id) }}" class="btn btn-success">Rang lista</a>
+        </div>
+
+    {% endif %}
+
+</div>
+
+<div class="float-right col-11" id="backBtn">
+    <a href="{{ url_for('views.quiz', quiz_id=quiz_id) }}" class="btn btn-dark">Vrati se na kviz</a>
+</div>
+<div class="float-right col-11" id="welcomeBtn">
+    <a href="{{ url_for('views.welcome') }}" class="btn btn-dark">Svi kvizovi</a>
+</div>
+
+{% include 'footer.html' %}
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const questionContainers = document.querySelectorAll('.question-container');
+        let currentQuestion = 0;
+        const answeredQuestions = {};
+        let timed = false;
+        // Varijable za timer
+        let questionTimer; // Timer za svako pitanje
+        const questionTimeout = 10000; // 10s po pitanju
+
+        const timerDisplay = document.getElementById('timerDisplay');
+
+        // prikaz pitanja
+        function showQuestion() {
+            // Ako se kliknulo na start pokreni timer
+            if(timed === true) {
+                startQuestionTimer();
+            }
+
+            if (currentQuestion < questionContainers.length) {
+                questionContainers[currentQuestion].style.display = 'block';
+                timerDisplay.style.display = 'block';
+            }
+        }
+
+        // Event listeneri
+        document.getElementById('startQuizBtn').addEventListener('click', function () {
+            document.getElementById('startQuizBtn').style.display = 'none'; // Hide the button
+            document.getElementById('startPracticeBtn').style.display = 'none'; // Hide the button
+            document.getElementById('highscoresBtn').style.display = 'none'; // Hide the button
+            document.getElementById('timerDisplay').style.display = 'block'; // Display time
+            document.getElementById('backBtn').style.display = 'block'; // Display time
+            document.getElementById('welcomeBtn').style.display = 'none'; // Display time
+
+            // Ako je start onda promijeni varijablu tako da se mjeri vrijeme
+            timed = true;
+            showQuestion();
+        });
+
+        document.getElementById('startPracticeBtn').addEventListener('click', function () {
+            document.getElementById('startQuizBtn').style.display = 'none'; // Hide the button
+            document.getElementById('startPracticeBtn').style.display = 'none'; // Hide the button
+            document.getElementById('highscoresBtn').style.display = 'none'; // Hide the button
+            document.getElementById('backBtn').style.display = 'block'; // Display time
+            document.getElementById('welcomeBtn').style.display = 'none'; // Display time
+
+            showQuestion(); // Show the first question
+        });
+
+        // započni mjeriti vrijeme
+        function startQuestionTimer() {
+            let timeLeft = questionTimeout / 1000;
+
+            questionTimer = setInterval(function () {
+                // Prikaz preostalog vremena
+                timerDisplay.textContent = ` ${formatTime(timeLeft)}`;
+
+                // Promjena boje ovisno o tome koliko je vremena preostalo
+                changeColorBasedOnTime(timeLeft);
+
+                // Ako je timer došao do 0 onda pređi na iduće pitanje ili submitaj formu
+                if (timeLeft <= 0.1) {
+                    clearInterval(questionTimer); // Zaustavi timer
+                    // Iduće pitanje
+                    questionContainers[currentQuestion].style.display = 'none';
+                    currentQuestion++;
+
+                    if (currentQuestion < questionContainers.length) { // ako nije zadnje pitanje
+                        showQuestion();
+                    } else { // ako je zadnje pitanje
+                        // ubaci skupljene odgovore u skriveno polje
+                        const answersInput = document.getElementById('userAnswers');
+                        answersInput.value = JSON.stringify(answeredQuestions);
+
+                        document.getElementById('quizForm').submit();
+                    }
+                }
+
+                timeLeft -= 0.1; // Umanji za 0.1s
+            }, 100); // Svakih 100ms updateaj
+        }
+
+        function changeColorBasedOnTime(timeLeft) {
+            const yellowThreshold = 5; // na 5s mijenjaj boju u žuto
+            const redThreshold = 2; // na 2s mijenjaj boju u crveno
+
+            if (timeLeft > yellowThreshold) {
+                // Zelena
+                timerDisplay.style.color = '#28a745';
+            } else if (timeLeft > redThreshold) {
+                // Žuta
+                timerDisplay.style.color = '#ffc107';
+            } else {
+                // Crvena
+                timerDisplay.style.color = '#dc3545';
+            }
+        }
+
+
+        function formatTime(seconds) {
+            // Formatiranje sekundi
+            const remainingSeconds = seconds % 60;
+
+            return `${remainingSeconds.toFixed(1)}`;
+        }
+
+        document.querySelectorAll('.answer-button').forEach(function (button) {
+            button.addEventListener('click', function () {
+                // Spremi kliknuti odgovor korisnika
+                const questionId = questionContainers[currentQuestion].id.replace('question', '');
+                answeredQuestions[questionId] = button.getAttribute('data-answer');
+
+                // Zaustavi timer
+                clearInterval(questionTimer);
+
+                // Sakrij trenutno pitanje
+                questionContainers[currentQuestion].style.display = 'none';
+
+                // Prebaci se na iduće pitanje
+                currentQuestion++;
+
+                // Prikaži iduće pitanje ili submitaj formu ako je bilo zadnje pitanje
+                if (currentQuestion < questionContainers.length) {
+                    showQuestion();
+                } else {
+                    // ubaci skupljene odgovore u skriveno polje
+                    const answersInput = document.getElementById('userAnswers');
+                    answersInput.value = JSON.stringify(answeredQuestions);
+
+                    document.getElementById('quizForm').submit();
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>
