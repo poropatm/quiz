@@ -31,7 +31,6 @@ class Quiz(db.Model):
     quiz_name = db.Column(db.String(255), nullable=False)  # Ensure this matches your actual database column name
     questions = db.relationship('Question', backref='quiz', lazy=True)
     quiz_scores = db.relationship('QuizScore', backref='quiz', lazy=True)
-    comments = db.relationship('Comment', backref='quiz', lazy=True)
 
 
 class Question(db.Model):
