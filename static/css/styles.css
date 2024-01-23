@@ -6,12 +6,11 @@
     background: linear-gradient(to right, #dc3545, lightblue);
     -webkit-background-clip: text;
     color: transparent;
-    /* You can add more styles based on your preferences */
 }
 
 .water-icon {
-    margin-left: 10px; /* Adjust the margin as needed */
-    color: lightblue; /* Adjust the color as needed */
+    margin-left: 10px;
+    color: lightblue;
 }
 
 

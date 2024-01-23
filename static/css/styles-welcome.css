@@ -13,13 +13,13 @@ body {
 
 .quiz-links {
     display: flex;
-    justify-content: center; /* Center the blocks */
-    flex-direction: column; /* Stack the blocks vertically */
-    align-items: center; /* Center items horizontally */
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 .quiz-block {
-    flex-basis: 100%; /* Full width of the container */
+    flex-basis: 100%;
     margin-bottom: 20px;
     padding: 20px;
     border: 2px solid #dc3545;
@@ -33,7 +33,7 @@ body {
 .quiz-block:hover,
 .quiz-block:active {
     background-color: #dc3545;
-    color: #ffffff; /* Change text color to white on hover and active */
+    color: #ffffff;
     font-weight: bold;
 }
 
@@ -46,9 +46,9 @@ body {
 }
 
 .quiz-link {
-    text-decoration: none; /* Remove underline from link text */
+    text-decoration: none;
     font-size: 1.5rem;
-    display: block; /* Make the link cover the entire block */
+    display: block;
     position: relative;
     z-index: 1;
 }
