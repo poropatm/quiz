@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Odaberi kviz</title>
+    <title>Popis kvizova</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-quiz.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"  />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 
 </head>
 <body class="bg-light">
@@ -16,35 +16,55 @@
 {% include 'navbar.html' %}
 
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <!-- Forma za selektiranje kviza -->
-                    <form method="POST" action="{{ url_for('admin.select_quiz') }}">
-                        {{ form.csrf_token }}
-                        <div class="form-group">
-                            <label for="quiz" class="font-weight-bold">Odaberi kviz:</label>
-                            <select class="form-control" name="quiz" required>
-                                {% for quiz in quizzes %}
-                                    <option value="{{ quiz.id }}">{{ quiz.quiz_name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-dark btn-block">Nastavi</button>
-                    </form>
-                    <!-- Kraj forme -->
-                </div>
-                <div class="card-footer text-center">
-                </div>
-            </div>
-        </div>
+    <h4 class="text-center">Popis kvizova</h4>
+
+    <!-- Prikaz kvizova s gumbima za uređivanje i brisanje -->
+    <table class="table" id="quizzesTable">
+        <tbody>
+        {% for quiz in quizzes %}
+            <tr>
+                <td>{{ quiz.quiz_name }}</td>
+                <td>
+                    <a href="{{ url_for('admin.list_questions', quiz_id=quiz.id) }}" class="btn btn-warning btn-sm">Uredi pitanja</a>
+                </td>
+                <td>
+                    <a href="{{ url_for('admin.delete_quiz', quiz_id=quiz.id) }}" class="btn btn-danger btn-sm">Izbriši</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="container mt-5">
+
+    <!-- Dodaj kviz -->
+    <h4>Dodaj novi kviz:</h4>
+<form method="POST" action="{{ url_for('admin.add_quiz') }}">
+    {{ form.csrf_token }}
+    <div class="form-group">
+        <label for="new_quiz" class="font-weight-bold">Naziv novog kviza:</label>
+        <input type="text" class="form-control" name="new_quiz" required>
     </div>
+    <button type="submit" class="btn btn-primary">Dodaj novi kviz</button>
+</form>
 </div>
 
+<!-- Include necessary scripts -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+
+<!-- Inicijalizacija datatablice, hrvatski jezik -->
+<script>
+    $(document).ready(function () {
+        $('#quizzesTable').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Croatian.json"
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

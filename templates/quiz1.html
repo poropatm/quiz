@@ -79,7 +79,7 @@
     <!-- Prikaz rezultata ako postoji-->
     {% if score is not none %}
         <div class="mt-3 text-center">
-            <h3 style="color: #dc3545;">Your Score: {{ score }}/{{ total }}</h3>
+            <h3 style="color: #dc3545;">Rezultat: {{ score }}/{{ total }}</h3>
             <!-- Gumb za prikaz rang liste -->
             <a href="{{ url_for('views.highscores', quiz_id=quiz_id) }}" class="btn btn-success">Rang lista</a>
         </div>

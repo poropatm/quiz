@@ -208,6 +208,39 @@ def select_quiz():
     else:
         return redirect(url_for('views.welcome'))
 
+# Dodavanje novog kviza
+@admin_app.route('/add_quiz', methods=['POST'])
+@login_required
+def add_quiz():
+    if current_user.is_admin:
+        if request.method == 'POST':
+            new_quiz_name = request.form.get('new_quiz')
+
+            if new_quiz_name:
+                new_quiz = Quiz(quiz_name=new_quiz_name)
+                db.session.add(new_quiz)
+                db.session.commit()
+
+        return redirect(url_for('admin.select_quiz'))
+    else:
+        return redirect(url_for('views.welcome'))
+
+
+# Brisanje kviza
+@admin_app.route('/delete_quiz/<int:quiz_id>', methods=['GET', 'POST'])
+@login_required
+def delete_quiz(quiz_id):
+    if current_user.is_admin:
+        quiz_to_delete = Quiz.query.get_or_404(quiz_id)
+
+        db.session.delete(quiz_to_delete)
+        db.session.commit()
+
+        return redirect(url_for('admin.select_quiz'))
+    else:
+        return redirect(url_for('views.welcome'))
+
+
 
 # popis pitanja, mogućnost brisanja ili izmjene pojedinih pitanja u određenom kvizu
 @admin_app.route('/list_questions/<int:quiz_id>')
