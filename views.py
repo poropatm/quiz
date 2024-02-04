@@ -1,10 +1,13 @@
+import os
 from random import shuffle
 
-from flask import redirect, url_for, flash, render_template, Blueprint, request, json
+from flask import redirect, url_for, flash, render_template, Blueprint, request, json, current_app
 from flask_login import login_required, current_user, login_user, logout_user
 from sqlalchemy import func, and_
+from werkzeug.utils import secure_filename
 
-from models import User, db, Question, QuizScore, Quiz, Answer
+from config import STATIC_FOLDER, IMAGES_FOLDER
+from models import User, db, Question, QuizScore, Quiz, Answer, Image
 from forms import LoginForm, RegistrationForm, AddQuestionForm, SelectQuizForm
 from datetime import datetime, timezone
 
@@ -208,6 +211,7 @@ def select_quiz():
     else:
         return redirect(url_for('views.welcome'))
 
+
 # Dodavanje novog kviza
 @admin_app.route('/add_quiz', methods=['POST'])
 @login_required
@@ -239,7 +243,6 @@ def delete_quiz(quiz_id):
         return redirect(url_for('admin.select_quiz'))
     else:
         return redirect(url_for('views.welcome'))
-
 
 
 # popis pitanja, mogućnost brisanja ili izmjene pojedinih pitanja u određenom kvizu
@@ -288,7 +291,23 @@ def add_question(quiz_id):
                 db.session.add(new_answer)
 
             db.session.commit()
-            return redirect(url_for('admin.add_question', quiz_id=quiz_id))
+
+            # Upload slike
+            image_file = form.image_upload.data
+            if image_file:
+                # Spremanje uploadane slike
+                filename = secure_filename(image_file.filename)
+                image_path = os.path.join(STATIC_FOLDER, IMAGES_FOLDER, filename)
+                image_file.save(image_path)
+
+                # Kreiranje Image i povezivanje s pitanjem
+                new_image = Image(file_path=f'{IMAGES_FOLDER}/{filename}')
+                new_question.image = new_image
+                db.session.add(new_image)
+
+            db.session.commit()
+
+            return redirect(url_for('admin.edit_question', quiz_id=quiz_id, question_id=new_question.id))
         return render_template('admin/addQuestion.html', form=form, quiz_id=quiz_id)
     else:
         return redirect(url_for('views.welcome'))
@@ -313,8 +332,32 @@ def edit_question(quiz_id, question_id):
             question.answers[2].is_correct = (form.correct_option.data == 'option_c')
             question.answers[3].is_correct = (form.correct_option.data == 'option_d')
 
+            # Upload slike ako 'image_upload' postoji u podacima forme
+            if 'image_upload' in request.files:
+                image_file = request.files['image_upload']
+                if image_file:
+                    # Ako već postoji slika povezana s pitanjem, brisanje te slike
+                    if question.image:
+                        existing_image_path = os.path.join('static', 'images', question.image.file_path)
+                        if os.path.exists(existing_image_path):
+                            os.remove(existing_image_path)
+
+                        # Uklanjanje te slike s pitanja
+                        db.session.delete(question.image)
+
+                    filename = secure_filename(image_file.filename)
+                    image_path = os.path.join('static', 'images', filename)
+                    image_file.save(image_path)
+
+                    # Kreiranje Image i povezivanje s pitanjem
+                    new_image = Image(file_path=f'images/{filename}')  # Update the file_path
+                    question.image = new_image
+
+                    db.session.add(new_image)
+
             db.session.commit()
-            return redirect(url_for('admin.list_questions', quiz_id=quiz_id))
+
+            return redirect(url_for('admin.edit_question', quiz_id=quiz_id, question_id=question_id))
 
         # popunjavanje forme s trenutnim podacima
         form.question_text.data = question.question_text
@@ -325,7 +368,7 @@ def edit_question(quiz_id, question_id):
             if answer.is_correct:
                 form.correct_option.data = f'option_{chr(ord("a") + i)}'
 
-        return render_template('admin/editQuestion.html', form=form, quiz_id=quiz_id, question_id=question_id)
+        return render_template('admin/editQuestion.html', form=form, quiz_id=quiz_id, question_id=question_id, question=question)
 
     else:
         return redirect(url_for('views.welcome'))
@@ -344,6 +387,34 @@ def delete_question(quiz_id, question_id):
 
         # Vraća na popis pitanja za taj kviz, tj vizualno samo refresha stranicu
         return redirect(url_for('admin.list_questions', quiz_id=quiz_id))
+
+    else:
+        return redirect(url_for('views.welcome'))
+
+
+# brisanje slike
+@admin_app.route('/delete_image/<int:question_id>', methods=['POST'])
+@login_required
+def delete_image(question_id):
+    if current_user.is_admin:
+        question = Question.query.get_or_404(question_id)
+
+        # Provjera ima li pitanje povezanu sliku
+        if question.image and db.session.query(Image).get(question.image.id):
+            # Brisanje slike
+            image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], question.image.file_path)
+            if os.path.exists(image_path):
+                os.remove(image_path)
+
+            # Uklanjanje te slike s pitanja
+            db.session.delete(question.image)
+            db.session.commit()
+
+            # Redirekt na editiranje tog pitanja
+            return redirect(url_for('admin.edit_question', quiz_id=question.quiz_id, question_id=question_id))
+
+        else:
+            return redirect(url_for('admin.edit_question', quiz_id=question.quiz_id, question_id=question_id))
 
     else:
         return redirect(url_for('views.welcome'))

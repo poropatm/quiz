@@ -14,7 +14,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 migrate = Migrate(app, db)
 
-app.register_blueprint(views_app)  # Register the Blueprint
+app.register_blueprint(views_app)
 app.register_blueprint(admin_app)
 
 

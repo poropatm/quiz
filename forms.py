@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, validators, SubmitField, SelectField, TextAreaField
+from wtforms import StringField, PasswordField, validators, SubmitField, SelectField, TextAreaField, FileField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 
 
@@ -39,4 +39,5 @@ class AddQuestionForm(FlaskForm):
         ('option_c', 'Opcija C'),
         ('option_d', 'Opcija D')],
                                  validators=[DataRequired()])
+    image_upload = FileField('Dodaj sliku (opcionalno)')
     submit = SubmitField('Dodaj pitanje')
