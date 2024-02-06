@@ -15,7 +15,7 @@
 
 {% include 'navbar.html' %}
 
-<div class="container mt-5 mb-5">
+<div class="container mt-5">
     <h4>Izmjena pitanja</h4>
     <form id="editForm" method="POST" action="{{ url_for('admin.edit_question', quiz_id=quiz_id, question_id=question_id) }}" enctype="multipart/form-data">
         {{ form.csrf_token }}
@@ -27,10 +27,11 @@
         <div class="form-group">
             {% if question.image %}
                 <img src="{{ url_for('static', filename=question.image.file_path) }}" alt="Current Question Image" style="max-width: 400px; max-height: 200px; margin-bottom: 10px;">
-                <button id="deleteImageButton" class="btn btn-danger btn-sm">Delete Image</button>
+                <button id="deleteImageButton" class="btn btn-danger btn-sm">Obriši sliku</button>
             {% else %}
-                <label for="image_upload">Upload Image:</label>
-                <input type="file" name="image_upload">
+                <input type="file" name="image_upload" id="image_upload_input" style="display: none;">
+                <button type="button" onclick="document.getElementById('image_upload_input').click();">Dodaj sliku</button>
+                <span id="selected_file">Slika nije odabrana</span>
             {% endif %}
         </div>
         <fieldset class="form-group">
@@ -70,6 +71,18 @@
 
         document.getElementById('editForm').action = "{{ url_for('admin.delete_image', question_id=question_id) }}";
         document.getElementById('editForm').submit();
+    });
+</script>
+<script>
+    document.getElementById('image_upload_input').addEventListener('change', function () {
+        var input = this;
+        var label = document.getElementById('selected_file');
+
+        if (input.files && input.files.length > 0) {
+            label.innerHTML = input.files[0].name;
+        } else {
+            label.innerHTML = 'Slika nije odabrana';
+        }
     });
 </script>
 
