@@ -13,5 +13,5 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    UPLOAD_FOLDER = os.path.join(os.getcwd(), 'static/images')
+    UPLOAD_FOLDER = os.path.join(os.getcwd(), STATIC_FOLDER, IMAGES_FOLDER)
 

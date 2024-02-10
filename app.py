@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_migrate import Migrate
 
@@ -7,18 +9,20 @@ from views import views_app, admin_app
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.config['ENV'] = os.getenv('FLASK_ENV')
 
-
+# Inicijalizacija ekstenzija
 db.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 migrate = Migrate(app, db)
 
+# Registracija blueprintova
 app.register_blueprint(views_app)
 app.register_blueprint(admin_app)
 
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+    # Pokretanje servera
+    app.run(debug=(app.config['ENV'] == 'development'))
+
