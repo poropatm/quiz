@@ -28,7 +28,7 @@ class User(db.Model, UserMixin):
 
 class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    quiz_name = db.Column(db.String(255), nullable=False)  # Ensure this matches your actual database column name
+    quiz_name = db.Column(db.String(255), nullable=False)
     questions = db.relationship('Question', backref='quiz', lazy=True)
     quiz_scores = db.relationship('QuizScore', backref='quiz', lazy=True)
 

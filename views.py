@@ -170,8 +170,7 @@ def profile():
 @login_required
 def logout():
     logout_user()
-    flash('Logout successful!', 'success')
-    return redirect(url_for('views.login'))  # Redirect to the login page after logout
+    return redirect(url_for('views.login'))
 
 
 # početna stranica, prikazuje sve kvizove
