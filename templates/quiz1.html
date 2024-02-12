@@ -23,26 +23,26 @@
 
 {% include 'navbar.html' %}
 
-<div class="container mt-5 col-11">
+<div class="container mt-3 col-9">
     <h1 class="quiz-title text-dark">{{ quiz_name }}</h1>
 
     {% if score is none %}
 
-        <div class="mt-5 text-center">
+        <div class=" text-center">
             <div>
-                <button class="btn btn-primary btn-lg" id="startQuizBtn">START</button>
+                <button class="mt-5 btn btn-primary btn-lg" id="startQuizBtn">START</button>
             </div>
-            <div class="mt-3">
-                <button class="btn btn-warning btn-lg" id="startPracticeBtn">Želim vježbati</button>
+            <div>
+                <button class="btn btn-warning btn-lg mt-3" id="startPracticeBtn">Želim vježbati</button>
             </div>
 
-            <div class="mt-5">
-                <a id="highscoresBtn" href="{{ url_for('views.highscores', quiz_id=quiz_id) }}" class="btn btn-success mt-3">Rang lista</a>
+            <div>
+                <a id="highscoresBtn" href="{{ url_for('views.highscores', quiz_id=quiz_id) }}" class=" mt-5 btn btn-success mt-3">Rang lista</a>
             </div>
         </div>
         <div class="col">
             <!-- Prikaz timera -->
-            <div id="timerDisplay" class="mt-2 text-right"></div>
+            <div id="timerDisplay" class="text-right"></div>
         </div>
 
         <form method="POST" action="{{ url_for('views.quiz', quiz_id=quiz_id) }}" id="quizForm">
@@ -84,15 +84,15 @@
         </div>
 
     {% endif %}
+    <div class="float-right mt-2" id="backBtn">
+        <a href="{{ url_for('views.quiz', quiz_id=quiz_id) }}" class="btn btn-dark">Vrati se na kviz</a>
+    </div>
+    <div class="mt-5 text-center" id="welcomeBtn">
+        <a href="{{ url_for('views.welcome') }}" class="btn btn-dark">Svi kvizovi</a>
+    </div>
 
 </div>
 
-<div class="float-right col-11" id="backBtn">
-    <a href="{{ url_for('views.quiz', quiz_id=quiz_id) }}" class="btn btn-dark">Vrati se na kviz</a>
-</div>
-<div class="float-right col-11" id="welcomeBtn">
-    <a href="{{ url_for('views.welcome') }}" class="btn btn-dark">Svi kvizovi</a>
-</div>
 
 {% include 'footer.html' %}
 
