@@ -17,7 +17,7 @@
     <h1 class="quiz-title">Rang lista</h1>
 
     <!-- Tablica za prikaz rang liste -->
-    <table class="table table-bordered table-hover">
+    <table class="table table-bordered table-hover mt-3">
         <thead class="thead-dark">
         <tr>
             <th scope="col">Mjesto</th>
@@ -35,11 +35,11 @@
         {% endfor %}
         </tbody>
     </table>
+    <div class="float-right mt-3" id="backBtn">
+        <a href="{{ url_for('views.quiz', quiz_id=quiz_id) }}" class="btn btn-dark">Vrati se na kviz</a>
+    </div>
+</div>
 
-</div>
-<div class="float-right col-11" id="backBtn">
-    <a href="{{ url_for('views.quiz', quiz_id=quiz_id) }}" class="btn btn-dark">Vrati se na kviz</a>
-</div>
 
 {% include 'footer.html' %}
 

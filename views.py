@@ -10,9 +10,11 @@ from config import STATIC_FOLDER, IMAGES_FOLDER
 from models import User, db, Question, QuizScore, Quiz, Answer, Image
 from forms import LoginForm, RegistrationForm, AddQuestionForm, SelectQuizForm
 from datetime import datetime, timezone
+import plotly.express as px
 
 views_app = Blueprint('views', __name__)
 admin_app = Blueprint('admin', __name__)
+
 
 # username:user, pass:user
 # username:admin, pass:admin
@@ -115,7 +117,6 @@ def quiz(quiz_id):
                 if user_answer == correct_answer.option_text:
                     correct_count += 1
 
-
         # Izračunaj postotak
         if total_questions > 0:
             percentage_score = round((correct_count / total_questions) * 100)
@@ -123,7 +124,8 @@ def quiz(quiz_id):
             percentage_score = 0
 
         # Spremi rezultat u bazu
-        quiz_score = QuizScore(user_id=current_user.id, quiz_id=quiz_id, score=percentage_score, date=datetime.now(timezone.utc))
+        quiz_score = QuizScore(user_id=current_user.id, quiz_id=quiz_id, score=percentage_score,
+                               date=datetime.now(timezone.utc))
         db.session.add(quiz_score)
         db.session.commit()
 
@@ -157,10 +159,10 @@ def highscores(quiz_id):
 def profile():
     user_highscores = (
         db.session.query(Quiz.quiz_name, db.func.max(QuizScore.score).label('max_score'))
-        .join(QuizScore, Quiz.id == QuizScore.quiz_id)
-        .filter_by(user_id=current_user.id)
-        .group_by(Quiz.quiz_name)
-        .all()
+            .join(QuizScore, Quiz.id == QuizScore.quiz_id)
+            .filter_by(user_id=current_user.id)
+            .group_by(Quiz.quiz_name)
+            .all()
     )
 
     return render_template('profile.html', user_highscores=user_highscores, username=current_user.username)
@@ -189,7 +191,8 @@ def admin_dashboard():
     if current_user.is_admin:  # provjera je li user admin
         return redirect(url_for('admin.select_quiz'))
     else:
-        return redirect(url_for('views.welcome'))  # ako pokušava pristupiti ne admin redirect na njegovu početnu stranicu
+        return redirect(
+            url_for('views.welcome'))  # ako pokušava pristupiti ne admin redirect na njegovu početnu stranicu
 
 
 # selektiranje kviza za kojeg će se mijenjati/dodavati pitanja
@@ -367,7 +370,8 @@ def edit_question(quiz_id, question_id):
             if answer.is_correct:
                 form.correct_option.data = f'option_{chr(ord("a") + i)}'
 
-        return render_template('admin/editQuestion.html', form=form, quiz_id=quiz_id, question_id=question_id, question=question)
+        return render_template('admin/editQuestion.html', form=form, quiz_id=quiz_id, question_id=question_id,
+                               question=question)
 
     else:
         return redirect(url_for('views.welcome'))
@@ -417,3 +421,69 @@ def delete_image(question_id):
 
     else:
         return redirect(url_for('views.welcome'))
+
+
+@views_app.route('/quiz_statistics/<int:quiz_id>')
+def quiz_statistics(quiz_id):
+    # Upit za računanje statistike
+    quiz_statistics_data = db.session.query(
+        User.username,
+        QuizScore.score
+    ).join(QuizScore, User.id == QuizScore.user_id). \
+        filter(QuizScore.quiz_id == quiz_id).all()
+
+    # Kreiranje DataFramea za rezultat upita
+    import pandas as pd
+    df = pd.DataFrame(quiz_statistics_data, columns=['Korisničko ime', 'Rezultat'])
+
+    # Računanje statistike - prosjek, max
+    average_score = df['Rezultat'].mean()
+    highest_score = df['Rezultat'].max()
+
+    # Plotly Express - kreiranje grafikona
+    fig = px.bar(df, x='Korisničko ime', y='Rezultat',
+                 labels={'Rezultat': 'Rezultat kviza'})
+
+    # Pretvaranje u HTML
+    chart_html = fig.to_html(full_html=False)
+
+    # Dohvati sve kvizove za popunjavanje dropdown-a
+    quizzes = Quiz.query.all()
+
+    # Dohvati odabrani kviz
+    selected_quiz = Quiz.query.get(quiz_id)
+
+    return render_template('quizStatistics.html', chart_html=chart_html, average_score=average_score,
+                           highest_score=highest_score, quiz_id=quiz_id, quizzes=quizzes, selected_quiz=selected_quiz)
+
+
+@views_app.route('/quiz_statistics_all')
+def quiz_statistics_all():
+    # Dohvati podatke o statistici za sve kvizove iz baze podataka
+    quiz_statistics_data = db.session.query(
+        Quiz.quiz_name,
+        func.avg(QuizScore.score).label('Prosjek'),
+        func.max(QuizScore.score).label('Najviši rezultat')
+    ).join(QuizScore, Quiz.id == QuizScore.quiz_id).group_by(Quiz.id).all()
+
+    # Stvori DataFrame iz rezultata upita
+    import pandas as pd
+    df = pd.DataFrame(quiz_statistics_data, columns=['Naziv Kviza', 'Prosjek', 'Najviši rezultat'])
+
+    # Izračunaj prosječan rezultat i najviši rezultat
+    average_score = df['Prosjek'].mean()
+    highest_score = df['Najviši rezultat'].max()
+
+    # Stvori stupčasti grafikon pomoću Plotly Express
+    fig = px.bar(df, x='Naziv Kviza', y=['Prosjek', 'Najviši rezultat'],
+                 title='Ukupna statistika svih kvizova', labels={'value': 'Rezultat'})
+
+    # Pretvori Plotly sliku u HTML
+    chart_html = fig.to_html(full_html=False)
+
+    # Dohvati sve kvizove za popunjavanje dropdown-a
+    quizzes = Quiz.query.all()
+
+    # Prikazi HTML predložak s grafikonom i statistikama
+    return render_template('quizStatisticsAll.html', chart_html=chart_html, average_score=average_score,
+                           highest_score=highest_score, quizzes=quizzes)

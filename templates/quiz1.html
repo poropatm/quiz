@@ -23,7 +23,7 @@
 
 {% include 'navbar.html' %}
 
-<div class="container mt-3 col-9">
+<div class="container mt-3 col-8">
     <h1 class="quiz-title text-dark">{{ quiz_name }}</h1>
 
     {% if score is none %}
@@ -78,9 +78,9 @@
     <!-- Prikaz rezultata ako postoji-->
     {% if score is not none %}
         <div class="mt-3 text-center">
-            <h3 style="color: #dc3545;">Rezultat: {{ score }}/{{ total }}</h3>
+            <h3 class="mt-3" style="color: #dc3545;">Rezultat: {{ score }}/{{ total }}</h3>
             <!-- Gumb za prikaz rang liste -->
-            <a href="{{ url_for('views.highscores', quiz_id=quiz_id) }}" class="btn btn-success">Rang lista</a>
+            <a href="{{ url_for('views.highscores', quiz_id=quiz_id) }}" class="mt-3 btn btn-success">Rang lista</a>
         </div>
 
     {% endif %}
