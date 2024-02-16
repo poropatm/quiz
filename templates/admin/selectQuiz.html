@@ -25,7 +25,7 @@
             <tr>
                 <td>{{ quiz.quiz_name }}</td>
                 <td>
-                    <a href="{{ url_for('admin.list_questions', quiz_id=quiz.id) }}" class="btn btn-warning btn-sm">Uredi kviz</a>
+                    <a href="{{ url_for('admin.list_questions', quiz_id=quiz.id) }}" class="btn btn-warning btn-sm">Uredi</a>
                 </td>
                 <td>
                     <a href="{{ url_for('admin.delete_quiz', quiz_id=quiz.id) }}" class="btn btn-danger btn-sm">Izbriši</a>

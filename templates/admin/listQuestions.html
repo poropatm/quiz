@@ -43,7 +43,7 @@
             <tr>
                 <td>{{ question.question_text }}</td>
                 <td>
-                    <a href="{{ url_for('admin.edit_question', quiz_id=quiz_id, question_id=question.id) }}" class="btn btn-warning btn-sm">Izmijeni</a>
+                    <a href="{{ url_for('admin.edit_question', quiz_id=quiz_id, question_id=question.id) }}" class="btn btn-warning btn-sm">Uredi</a>
                 </td>
                 <td>
                     <a href="{{ url_for('admin.delete_question', quiz_id=quiz_id, question_id=question.id) }}" class="btn btn-danger btn-sm">Izbriši</a>
