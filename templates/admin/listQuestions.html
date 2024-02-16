@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Popis pitanja - {{ quiz_name }}</title>
+    <title>Administracija kviza - {{ quiz_name }}</title>
 
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -17,9 +17,24 @@
 
 <div class="container mt-5">
     <h4 class="text-center">{{ quiz_name }}</h4>
+    <form method="POST" action="{{ url_for('admin.list_questions', quiz_id=quiz_id) }}">
+        {{ edit_quiz_form.hidden_tag() }}
+        <div class="container mt-3 mb-2">
+            <div class="form-group row">
+                <label for="new_quiz_name" class="col-sm-3 col-form-label">Novi naziv kviza:</label>
+                <div class="col-sm-7">
+                    <input type="text" id="new_quiz_name" name="new_quiz_name" class="form-control" value="{{ edit_quiz_form.new_quiz_name.data }}">
+                </div>
+                <div class="col-sm-2">
+                    {{ edit_quiz_form.submit(class="btn btn-success") }}
+                </div>
+                </div>
+        </div>
+    </form>
 
+    <div class="container mt-4 mb-2">
     <!-- Dodaj pitanje -->
-    <a href="{{ url_for('admin.add_question', quiz_id=quiz_id) }}" class="btn btn-primary mb-3">Dodaj pitanje</a>
+    <a href="{{ url_for('admin.add_question', quiz_id=quiz_id) }}" class="btn btn-info mb-3">Dodaj pitanje</a>
 
     <!-- Prikaz pitanja s gumbima za izmjenu i brisanje -->
     <table class="table" id="questionsTable">
@@ -39,7 +54,7 @@
     </table>
     <a class="btn btn-secondary mt-3 mb-5" href="{{ url_for('admin.admin_dashboard') }}">Povratak na popis kvizova</a>
 </div>
-
+</div>
 {% include 'footer.html' %}
 
 <!-- Inicijalizacija datatablice, hrvatski jezik -->

@@ -26,6 +26,11 @@ class SelectQuizForm(FlaskForm):
     submit = SubmitField('Dalje')
 
 
+class EditQuizForm(FlaskForm):
+    new_quiz_name = StringField('Novi naziv kviza', validators=[DataRequired()])
+    submit = SubmitField('Spremi')
+
+
 # Forma za dodavanje pitanja - admin
 class AddQuestionForm(FlaskForm):
     question_text = TextAreaField('Tekst pitanja', validators=[DataRequired()])

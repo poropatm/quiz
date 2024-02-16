@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ukupna statistika kviza</title>
+    <title>Ukupna statistika svih kvizova</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-quiz.css') }}">
@@ -13,9 +13,9 @@
 {% include 'navbar.html' %}
 
 <div class="container mt-4">
-    <h4 class="quiz-title">Ukupna statistika svih kvizova</h4>
+    <h4 class="mb-3">Ukupna statistika svih kvizova</h4>
 
-    <p>Prosječan rezultat: {{ average_score }}</p>
+    <p>Prosječan rezultat: {{ average_score|round(2) }}</p>
     <p>Najviši rezultat: {{ highest_score }}</p>
 
     {{ chart_html|safe }}
@@ -27,7 +27,7 @@
             </button>
             <div class="dropdown-menu" aria-labelledby="quizDropdown">
                 {% for quiz in quizzes %}
-                    <a href="#" data-quiz-id="{{ quiz.id }}" class="dropdown-item quiz-link">{{ quiz.quiz_name }}</a>
+                    <a href="{{ url_for('admin.quiz_statistics', quiz_id=quiz.id) }}" class="dropdown-item">{{ quiz.quiz_name }}</a>
                 {% endfor %}
             </div>
         </div>
@@ -47,15 +47,5 @@
 <!-- Bootstrap JS -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<script>
-    $('.quiz-link').on('click', function() {
-        var quizId = $(this).data('quiz-id');
-        redirectToQuiz(quizId);
-    });
-
-    function redirectToQuiz(quizId) {
-        window.location.href = "/quiz_statistics/" + quizId;
-    }
-</script>
 </body>
 </html>

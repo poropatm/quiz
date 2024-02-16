@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 
 from config import STATIC_FOLDER, IMAGES_FOLDER
 from models import User, db, Question, QuizScore, Quiz, Answer, Image
-from forms import LoginForm, RegistrationForm, AddQuestionForm, SelectQuizForm
+from forms import LoginForm, RegistrationForm, AddQuestionForm, SelectQuizForm, EditQuizForm
 from datetime import datetime, timezone
 import plotly.express as px
 
@@ -23,6 +23,8 @@ admin_app = Blueprint('admin', __name__)
 # Ako je korisnik prijavljen, preusmjerava na 'views.welcome', inače na 'views.login'.
 @views_app.route('/')
 def root():
+    if current_user.is_admin:
+        return redirect(url_for('admin.select_quiz'))
     if current_user.is_authenticated:
         return redirect(url_for('views.welcome'))
     else:
@@ -159,10 +161,10 @@ def highscores(quiz_id):
 def profile():
     user_highscores = (
         db.session.query(Quiz.quiz_name, db.func.max(QuizScore.score).label('max_score'))
-            .join(QuizScore, Quiz.id == QuizScore.quiz_id)
-            .filter_by(user_id=current_user.id)
-            .group_by(Quiz.quiz_name)
-            .all()
+        .join(QuizScore, Quiz.id == QuizScore.quiz_id)
+        .filter_by(user_id=current_user.id)
+        .group_by(Quiz.quiz_name)
+        .all()
     )
 
     return render_template('profile.html', user_highscores=user_highscores, username=current_user.username)
@@ -248,13 +250,22 @@ def delete_quiz(quiz_id):
 
 
 # popis pitanja, mogućnost brisanja ili izmjene pojedinih pitanja u određenom kvizu
-@admin_app.route('/list_questions/<int:quiz_id>')
+@admin_app.route('/list_questions/<int:quiz_id>', methods=['GET', 'POST'])
 @login_required
 def list_questions(quiz_id):
     questions = Question.query.filter_by(quiz_id=quiz_id).all()
-    quiz_name = Quiz.query.get(quiz_id).quiz_name
+    selected_quiz = Quiz.query.get(quiz_id)
+    edit_quiz_form = EditQuizForm()
 
-    return render_template('admin/listQuestions.html', quiz_id=quiz_id, quiz_name=quiz_name, questions=questions)
+    if edit_quiz_form.validate_on_submit():
+        new_quiz_name = edit_quiz_form.new_quiz_name.data
+        selected_quiz.quiz_name = new_quiz_name
+        db.session.commit()
+        return redirect(url_for('admin.list_questions', quiz_id=quiz_id))
+
+    edit_quiz_form.new_quiz_name.data = selected_quiz.quiz_name
+    return render_template('admin/listQuestions.html', quiz_id=quiz_id, quiz_name=selected_quiz.quiz_name,
+                           questions=questions, edit_quiz_form=edit_quiz_form)
 
 
 # dodavanje pitanja u kviz
@@ -423,7 +434,8 @@ def delete_image(question_id):
         return redirect(url_for('views.welcome'))
 
 
-@views_app.route('/quiz_statistics/<int:quiz_id>')
+@admin_app.route('/quiz_statistics/<int:quiz_id>')
+@login_required
 def quiz_statistics(quiz_id):
     # Upit za računanje statistike
     quiz_statistics_data = db.session.query(
@@ -440,9 +452,15 @@ def quiz_statistics(quiz_id):
     average_score = df['Rezultat'].mean()
     highest_score = df['Rezultat'].max()
 
-    # Plotly Express - kreiranje grafikona
-    fig = px.bar(df, x='Korisničko ime', y='Rezultat',
-                 labels={'Rezultat': 'Rezultat kviza'})
+    # Plotly Express - kreiranje histograma
+    bins = [i for i in range(0, 101)]
+    fig = px.histogram(df, x='Rezultat', nbins=len(bins) - 1, range_x=(0, 101),
+                       labels={'Rezultat': 'Rezultat kviza'},
+                       title='Distribucija rezultata', category_orders={'Rezultat': bins},
+                       histnorm='percent', color_discrete_sequence=['lightcoral'])
+
+    fig.update_yaxes(title_text='Postotak')
+    fig.update_layout(title_x=0.5)
 
     # Pretvaranje u HTML
     chart_html = fig.to_html(full_html=False)
@@ -457,7 +475,8 @@ def quiz_statistics(quiz_id):
                            highest_score=highest_score, quiz_id=quiz_id, quizzes=quizzes, selected_quiz=selected_quiz)
 
 
-@views_app.route('/quiz_statistics_all')
+@admin_app.route('/quiz_statistics_all')
+@login_required
 def quiz_statistics_all():
     # Dohvati podatke o statistici za sve kvizove iz baze podataka
     quiz_statistics_data = db.session.query(
@@ -476,7 +495,11 @@ def quiz_statistics_all():
 
     # Stvori stupčasti grafikon pomoću Plotly Express
     fig = px.bar(df, x='Naziv Kviza', y=['Prosjek', 'Najviši rezultat'],
-                 title='Ukupna statistika svih kvizova', labels={'value': 'Rezultat'})
+                 title='Rezultati po kvizovima', labels={'value': 'Rezultat', 'variable': ''}, barmode='group',
+                 color_discrete_map={'Prosjek': 'lightblue', 'Najviši rezultat': 'lightcoral'})
+
+    fig.update_xaxes(title_text='')
+    fig.update_layout(title_x=0.5)
 
     # Pretvori Plotly sliku u HTML
     chart_html = fig.to_html(full_html=False)

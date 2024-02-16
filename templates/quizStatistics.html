@@ -12,9 +12,9 @@
 {% include 'navbar.html' %}
 
 <div class="container mt-4">
-    <h4 class="quiz-title">Statistika kviza - {{ selected_quiz.quiz_name }}</h4>
+    <h4 class="mb-3">Statistika kviza - {{ selected_quiz.quiz_name }}</h4>
 
-    <p>Prosječan rezultat: {{ average_score }}</p>
+    <p>Prosječan rezultat: {{ average_score|round(2) }}</p>
     <p>Najviši rezultat: {{ highest_score }}</p>
 
     {{ chart_html|safe }}
@@ -26,13 +26,13 @@
             </button>
             <div class="dropdown-menu" aria-labelledby="quizDropdown">
                 {% for quiz in quizzes %}
-                    <a href="#" data-quiz-id="{{ quiz.id }}" class="dropdown-item quiz-link">{{ quiz.quiz_name }}</a>
+                    <a href="{{ url_for('admin.quiz_statistics', quiz_id=quiz.id) }}" class="dropdown-item">{{ quiz.quiz_name }}</a>
                 {% endfor %}
             </div>
         </div>
     </div>
 
-    <a class="btn btn-secondary mt-3 mb-5" href="{{ url_for('views.quiz_statistics_all') }}">Statistika svih kvizova</a>
+    <a class="btn btn-secondary mt-3 mb-5" href="{{ url_for('admin.quiz_statistics_all') }}">Statistika svih kvizova</a>
 
 </div>
 
@@ -46,17 +46,6 @@
 
 <!-- Bootstrap JS -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-<script>
-    $('.quiz-link').on('click', function() {
-        var quizId = $(this).data('quiz-id');
-        redirectToQuiz(quizId);
-    });
-
-    function redirectToQuiz(quizId) {
-        window.location.href = "/quiz_statistics/" + quizId;
-    }
-</script>
 
 
 </body>

@@ -56,16 +56,6 @@ body {
     margin-top: 20px;
 }
 
-.btn-primary {
-    background-color: #dc3545;
-    border-color: #dc3545;
-}
-
-.btn-primary:hover {
-    background-color: #c82333;
-    border-color: #c82333;
-}
-
 .card-title {
     display: block;
     width: 70%;
@@ -80,6 +70,14 @@ body {
     height: 150px;
     border-radius: 50%;
     font-size: 1.5rem;
+    background-color: #dc3545;
+    border-color: #dc3545;
+
+}
+
+#startQuizBtn:hover {
+    background-color: #c82333;
+    border-color: #c82333;
 }
 
 #timerDisplay {
