@@ -23,10 +23,11 @@ admin_app = Blueprint('admin', __name__)
 # Ako je korisnik prijavljen, preusmjerava na 'views.welcome', inače na 'views.login'.
 @views_app.route('/')
 def root():
-    if current_user.is_admin:
-        return redirect(url_for('admin.select_quiz'))
     if current_user.is_authenticated:
-        return redirect(url_for('views.welcome'))
+        if current_user.is_admin:
+            return redirect(url_for('admin.select_quiz'))
+        else:
+            return redirect(url_for('views.welcome'))
     else:
         return redirect(url_for('views.login'))
 
