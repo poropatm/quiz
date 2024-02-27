@@ -242,6 +242,9 @@ def delete_quiz(quiz_id):
     if current_user.is_admin:
         quiz_to_delete = Quiz.query.get_or_404(quiz_id)
 
+        for question in quiz_to_delete.questions:
+            db.session.delete(question)
+
         db.session.delete(quiz_to_delete)
         db.session.commit()
 

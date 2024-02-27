@@ -29,8 +29,8 @@ class User(db.Model, UserMixin):
 class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quiz_name = db.Column(db.String(255), nullable=False)
-    questions = db.relationship('Question', backref='quiz', lazy=True)
-    quiz_scores = db.relationship('QuizScore', backref='quiz', lazy=True)
+    questions = db.relationship('Question', backref='quiz', lazy=True, cascade='all, delete-orphan')
+    quiz_scores = db.relationship('QuizScore', backref='quiz', lazy=True, cascade='all, delete-orphan')
 
 
 class Question(db.Model):
