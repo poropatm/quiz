@@ -21,9 +21,10 @@ migrate = Migrate(app, db)
 app.register_blueprint(views_app)
 app.register_blueprint(admin_app)
 
-
 if __name__ == '__main__':
-    pass
     # Pokretanje servera
-    # app.run(debug=(app.config['ENV'] == 'development'))
+    app.run(debug=(app.config['ENV'] == 'development'))
 
+
+def create_app():
+    return Flask(__name__)
