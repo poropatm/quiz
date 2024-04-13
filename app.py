@@ -24,5 +24,6 @@ app.register_blueprint(admin_app)
 
 if __name__ == '__main__':
     # Pokretanje servera
-    app.run(debug=(app.config['ENV'] == 'development'))
+    if app.config['ENV'] == 'development':
+        app.run(debug=True)  # Run the Flask development server
 
