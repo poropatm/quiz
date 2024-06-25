@@ -4,7 +4,7 @@ body {
 
 .container-welcome {
     text-align: center;
-    margin-top: 50px;
+    margin-top: 30px;
 }
 
 .welcome-text {
@@ -14,20 +14,26 @@ body {
 .quiz-links {
     display: flex;
     justify-content: center;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap; /* Ensure items wrap on smaller screens */
 }
 
 .quiz-block {
-    flex-basis: 100%;
-    margin-bottom: 20px;
-    padding: 20px;
+    flex-basis: calc(50% - 40px); /* Two items per row with spacing */
+    margin: 10px; /* Adjust spacing between items */
+    padding: 5px;
     border: 2px solid #dc3545;
     border-radius: 5px;
     text-align: center;
     transition: background-color 0.3s;
     position: relative;
     color: #dc3545;
+    font-size: 1rem; /* Base font size */
+
+    display: flex;
+    flex-direction: column; /* Ensure text alignment works properly */
+    justify-content: center; /* Center text vertically */
+    align-items: center; /* Center text horizontally */
+
 }
 
 .quiz-block:hover,
@@ -47,7 +53,7 @@ body {
 
 .quiz-link {
     text-decoration: none;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     display: block;
     position: relative;
     z-index: 1;
@@ -61,4 +67,19 @@ body {
     top: 0;
     left: 0;
     z-index: -1;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+    .quiz-block {
+        flex-basis: calc(50% - 20px); /* Two items per row with tighter spacing */
+        font-size: 1rem; /* Adjust font size for smaller screens */
+    }
+}
+
+@media (max-width: 576px) {
+    .quiz-block {
+        flex-basis: calc(100% - 20px); /* Single item per row on smaller screens */
+        font-size: 0.9rem; /* Further reduce font size for smaller screens */
+    }
 }

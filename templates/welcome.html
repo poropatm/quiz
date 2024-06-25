@@ -13,9 +13,9 @@
 <body>
 {% include 'navbar.html' %}
 
-<div class="container-welcome text-center">
-    <h1 class="welcome-text text-dark">Želiš li biti vatrogasac, <span style="color: #dc3545;">{{ current_user.first_name|capitalize }}</span>?</h1>
-    <div class="quiz-links mt-4 mx-auto">
+<div class="container container-welcome text-center col-lg-6 col-md-8 col-11">
+    <h3 class="welcome-text text-dark">Želiš li biti vatrogasac, <span style="color: #dc3545;">{{ current_user.first_name|capitalize }}</span>?</h3>
+    <div class="quiz-links mt-3 mx-auto">
         {% for quiz in quizzes %}
             <a href="{{ url_for('views.quiz', quiz_id=quiz.id) }}" class="quiz-block">
                 <div class="quiz-link">{{ quiz.quiz_name }}</div>

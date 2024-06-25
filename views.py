@@ -355,7 +355,8 @@ def edit_question(quiz_id, question_id):
                 if image_file:
                     # Ako već postoji slika povezana s pitanjem, brisanje te slike
                     if question.image:
-                        existing_image_path = os.path.join('static', 'images', question.image.file_path)
+                        existing_image_path = os.path.normpath(os.path.join('static', question.image.file_path))
+
                         if os.path.exists(existing_image_path):
                             os.remove(existing_image_path)
 
@@ -420,7 +421,8 @@ def delete_image(question_id):
         # Provjera ima li pitanje povezanu sliku
         if question.image and db.session.query(Image).get(question.image.id):
             # Brisanje slike
-            image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], question.image.file_path)
+            image_path = os.path.normpath(os.path.join('static', question.image.file_path))
+
             if os.path.exists(image_path):
                 os.remove(image_path)
 

@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"  />
 
     <style>
-        .question-container, #timerDisplay {
+        .question-container {
             display: none;
         }
 
@@ -23,7 +23,7 @@
 
 {% include 'navbar.html' %}
 
-<div class="container mt-3 col-8">
+<div class="container mt-3 col-lg-6 col-md-8 col-11">
     <h1 class="quiz-title text-dark">{{ quiz_name }}</h1>
 
     {% if score is none %}
@@ -114,6 +114,37 @@
 
         const timerDisplay = document.getElementById('timerDisplay');
 
+        // Base font sizes for different screen widths
+        const fontSizeConfig = {
+            large: {
+                maxFontSize: 1.5,
+                minFontSize: 1,
+                maxLength: 100
+            },
+            medium: {
+                maxFontSize: 1.2,
+                minFontSize: 0.9,
+                maxLength: 80
+            },
+            small: {
+                maxFontSize: 1,
+                minFontSize: 0.8,
+                maxLength: 60
+            }
+        };
+
+        // Get font size configuration based on screen width
+        function getFontSizeConfig() {
+            if (window.innerWidth <= 576) {
+                return fontSizeConfig.small;
+            } else if (window.innerWidth <= 768) {
+                return fontSizeConfig.medium;
+            } else {
+                return fontSizeConfig.large;
+            }
+        }
+
+
         // prikaz pitanja
         function showQuestion() {
             // Ako se kliknulo na start pokreni timer
@@ -122,6 +153,7 @@
             }
 
             if (currentQuestion < questionContainers.length) {
+                adjustFontSize(questionContainers[currentQuestion]);
                 questionContainers[currentQuestion].style.display = 'block';
                 timerDisplay.style.display = 'block';
             }
@@ -208,6 +240,35 @@
             return `${remainingSeconds.toFixed(1)}`;
         }
 
+        // Adjust font size based on text length
+        function adjustFontSize(container) {
+            const config = getFontSizeConfig();
+            const questionText = container.querySelector('.card-title');
+            const answerButtons = container.querySelectorAll('.answer-button');
+
+            // Adjust question font size
+            adjustTextFontSize(questionText, config);
+
+            // Adjust each answer button font size
+            answerButtons.forEach(button => {
+                adjustTextFontSize(button, config);
+            });
+        }
+
+        // Adjust text font size based on its length
+        function adjustTextFontSize(element, config) {
+            let fontSize = config.maxFontSize;
+
+            if (element.textContent.length > config.maxLength) {
+                fontSize = config.maxFontSize - ((element.textContent.length - config.maxLength) / 50);
+                if (fontSize < config.minFontSize) {
+                    fontSize = config.minFontSize;
+                }
+            }
+
+            element.style.fontSize = `${fontSize}rem`;
+        }
+
         document.querySelectorAll('.answer-button').forEach(function (button) {
             button.addEventListener('click', function () {
                 // Spremi kliknuti odgovor korisnika
@@ -236,6 +297,11 @@
             });
         });
     });
-    </script>
+
+
+
+
+
+</script>
 </body>
 </html>
